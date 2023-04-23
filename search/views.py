@@ -58,11 +58,11 @@ def img_detec(req_img): # 모델 서버에 가격표 감지 요청 함수
   # 받아온 좌표로 가격표 부분만 자름
   data = json.loads(response.text)
   if(len(data)>1):
-    print("waring: 가격표 복수 감지 > 중심 가격표 추출")
+    print("> waring: 가격표 복수 감지 > 중심 가격표 추출\n")
     pil_image = Image.open(req_img)
     img_center_x = pil_image.size[0]/2
     img_center_y = pil_image.size[1]/2
-    dis_arry=[]
+    dis_arry=[] # 이미지 중심 좌표와 바인딩 중심 좌표들과의 직선거리 저장
     for d in data:
       xmin = int(d.get('xmin'))
       ymin = int(d.get('ymin'))
@@ -72,8 +72,8 @@ def img_detec(req_img): # 모델 서버에 가격표 감지 요청 함수
       bind_center_y = (ymax-ymin)/2
       dis_arry.append(two_point_distance(img_center_x,img_center_y,bind_center_x,bind_center_y))
     ## 정리필요
-    center_bind_idx = dis_arry.index(min(dis_arry))
-    print("center bind: " + str(data[center_bind_idx])+'\n')
+    center_bind_idx = dis_arry.index(min(dis_arry)) # 이미지 중심 좌표와 가장 가까운 바인딩 Index
+    # print("center bind: " + str(data[center_bind_idx])+'\n')
     xmin = int(data[center_bind_idx].get('xmin'))
     ymin = int(data[center_bind_idx].get('ymin'))
     xmax = int(data[center_bind_idx].get('xmax'))
@@ -112,7 +112,7 @@ def img_detec(req_img): # 모델 서버에 가격표 감지 요청 함수
     image_bytes = enc_image.tobytes()
     # result = base64.b64encode(image_bytes)
   else:
-    print("waring: 가격표 감지 실패"+'\n')
+    print("> waring: 가격표 감지 실패 > 원본 이미지로 진행"+'\n')
     return "fail"
   
   return image_bytes
@@ -142,7 +142,9 @@ def chatGPT(ocr_result): # cahtGPT API
     messages=[
       {
         "role": "user",
-        "content": ocr_result+"에서 상품명만 1개 정확하게 추출. 추출 못하겠으면 'fail'만 출력."
+        "content": "Extract one product name only from '" + ocr_result +"'. If you can't extract it, just print 'fail'."
+        # ocr_result+"에서 상품명만 1개 정확하게 추출. 추출 못하겠으면 'fail'만 출력."
+        # Extract one product name only from ~. If you can't extract it, just print "fail".
       }
     ],
   )
@@ -153,7 +155,7 @@ def search_name(search_word):
   es = Elasticsearch(hosts=[{'host': ES_HOST, 'port': 9200, 'scheme': "http"}])
 
   if not search_word:
-      return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'search word param is missing'})
+    return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': 'search word param is missing'})
 
   docs = es.search(index='dictionary',query= {"multi_match": {"query": search_word, "fields": ["name"] }} )
 
@@ -180,27 +182,34 @@ class SearchView(APIView):
 
     # OCR 진행
     ocr_result = ocr(image_bytes)
-    if(ocr_result=="fail"):
-      return Response("err: ocr 실패")
-    print("1차 ocr 결과: " + str(ocr_result)+'\n')
-
+    print("> 1차 ocr 결과: \n" + str(ocr_result)+'\n')
+    if(ocr_result=="fail"): # 가격표 감지가 이상하게 되어 ocr 진행이 어려울 때
+      print("> waring: 1차 ocr 실패 > 원본 이미지로 재시도"+'\n')
+      pil_image = Image.open(req_img)
+      image_bytes = image_to_byte_array(pil_image)
+      ocr_result = ocr(image_bytes)
+      print("> 2차 ocr 결과: \n" + str(ocr_result)+'\n')
+      # return Response(501) # "err: ocr 실패"
+    
     # NER 진행
     gpt_result = chatGPT(ocr_result)
-    print("1차 gpt 결과: " + str(gpt_result)+'\n')
+    print("> 1차 gpt 결과: \n" + str(gpt_result)+'\n')
     if(gpt_result.find('fail')!=-1):
-      print("waring: 1차 gpt 실패"+'\n')
+      print("> waring: 1차 gpt 실패"+'\n')
       pil_image = Image.open(req_img)
       ocr_result = ocr(image_to_byte_array(pil_image))
-      print("2차 ocr 결과:" + str(ocr_result)+'\n')
+      print("> 3차 ocr 결과:\n" + str(ocr_result)+'\n')
       gpt_result = chatGPT(ocr_result)
-      print("2차 gpt 결과: " + str(gpt_result)+'\n')
+      print("> 2차 gpt 결과:\n " + str(gpt_result)+'\n')
+      if(gpt_result.find('fail')!=-1):
+        return Response(501)
 
     # Search 진행
     search_result = search_name(gpt_result)
     if(search_result.find('fail')!=-1):
-      print("상품명 검색 결과: DB에 없는 상품" + '\n')
-      search_result = "DB에 없는 상품"
+      print("> 상품명 검색 결과: DB에 없는 상품" + '\n')
+      return Response(502)
     else:
-      print("상품명 검색 결과: " + str(search_result)+'\n')
+      print("> 상품명 검색 결과: \n" + str(search_result)+'\n')
 
     return Response(search_result)
