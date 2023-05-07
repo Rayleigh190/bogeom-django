@@ -72,7 +72,8 @@ def search_name(search_word):
   try:
     score_data = data_list['hits'][0]['_score']
     name_data = data_list['hits'][0]['_source']['name']
-    dic_data = {'name': name_data, 'score': score_data}
+    item_id = data_list['hits'][0]['_source']['id']
+    dic_data = {'id': item_id, 'name': name_data, 'score': score_data}
     return dic_data
   except:
     data = "fail"
@@ -96,7 +97,7 @@ def get_pd_name(split_result_list): # 상품명 추출
   sorted_search_result_list = sorted(search_result_list, key=lambda x: x['score'], reverse=True)
   
   if max_score > 4:
-    dic = {'name': sorted_search_result_list[0]['name'], 'index': name_idx}
+    dic = {'item_id': sorted_search_result_list[0]['id'], 'item_name': sorted_search_result_list[0]['name'], 'index': name_idx}
     return dic
   else:
     return "fail"
@@ -134,13 +135,13 @@ class SearchView(APIView):
     # Parsing 진행
     split_result_list = ocr_result.split('\n')
     pd_name_dic = get_pd_name(split_result_list) # 상품명 추출
-    print(pd_name_dic)
+
     if pd_name_dic == 'fail':
       return Response(501)
     pd_price = get_pd_price(split_result_list, pd_name_dic['index']) # 가격 추출
     if pd_price == 'fail':
       pd_price = 0
     
-    final_result_dic = {'name':pd_name_dic['name'], 'price':pd_price}
+    final_result_dic = {'item_id':pd_name_dic['item_id'], 'item_name':pd_name_dic['item_name'], 'item_price':pd_price}
 
     return Response(final_result_dic)
