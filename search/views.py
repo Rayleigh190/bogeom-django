@@ -142,6 +142,6 @@ class SearchView(APIView):
     if pd_price == 'fail':
       pd_price = 0
     
-    final_result_dic = {'item_id':pd_name_dic['item_id'], 'item_name':pd_name_dic['item_name'], 'item_price':pd_price}
+    final_result_dic = {'img_id':pd_name_dic['item_id'], 'item_name':pd_name_dic['item_name'], 'item_price':pd_price}
 
     return Response(final_result_dic)
