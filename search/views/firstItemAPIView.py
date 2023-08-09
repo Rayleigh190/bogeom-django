@@ -63,9 +63,12 @@ class FirstItem(APIView):
 
 
     try:
-      page = requests.get(naver_link)
+      header = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"} 
+      page = requests.get(naver_link, headers=header)
       soup = bs(page.text, "html.parser")
+      print(soup)
       elements = soup.find('div', class_='list_extend').select('a')
+      print(elements)
       naver_first_item_link = elements[0]['href']
       print(naver_first_item_link)
     except Exception as e:
