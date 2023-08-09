@@ -35,6 +35,7 @@ class FirstItem(APIView):
       soup = bs(html, "html.parser")
       elements = soup.find('div', 'lp__prod_list').select('a')
       enuri_first_item_link = "https://m.enuri.com/"+elements[0]['href']
+      print(enuri_first_item_link)
     except Exception as e:
       print("에누리 첫 번째 아이템 파싱 에러.", e)
       error_message = "에누리 첫 번째 아이템 파싱 에러 발생: " + str(e)
@@ -62,7 +63,8 @@ class FirstItem(APIView):
     try:
       html = driver.page_source
       soup = bs(html, "html.parser")
-      elements = soup.select('div > a.product_info_main__piyRs.linkAnchor')
+      elements = soup.find('div', 'product_list_item__b84TO').select('a')
+      # elements = soup.select('div > a.product_info_main__piyRs.linkAnchor')
       naver_first_item_link = elements[0]['href']
       print(naver_first_item_link)
     except Exception as e:
