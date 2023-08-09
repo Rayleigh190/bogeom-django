@@ -84,7 +84,7 @@ class BlogView(APIView):
   
 
 class BlogSummaryView(APIView):
-  def get(self, request):
+  def post(self, request):
     # request.data.get('link')
     link = request.data.get('link')
 

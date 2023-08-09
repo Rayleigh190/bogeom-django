@@ -12,8 +12,8 @@ import requests
 
 class FirstItem(APIView):
   def get(self, request):
-
-    item_name = request.data.get('item_name')  
+    item_name = request.GET['search']
+    # item_name = request.data.get('item_name')  
     encoded_item_name = urllib.parse.quote(item_name)
 
     enuri_link = "https://m.enuri.com/m/search.jsp?keyword="+encoded_item_name
