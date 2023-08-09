@@ -1,6 +1,8 @@
 from django.urls import path  
-from search import views  
+from search.views import parseAPIView
+from search.views import blogAPIView
 
 urlpatterns = [  
-    path('', views.SearchView.as_view()),  
+    path('parse', parseAPIView.ImageSearchView.as_view()),
+    path('search/blog', blogAPIView.BlogView.as_view()),
 ]
