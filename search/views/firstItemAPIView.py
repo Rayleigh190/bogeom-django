@@ -62,6 +62,9 @@ class FirstItem(APIView):
     driver.get(naver_link)
     # WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "/html/body/div/div/div[2]/div[7]")))
     try:
+      html = driver.page_source
+      soup = bs(html, "html.parser")
+      print(soup)
       naver_first_item_link = driver.find_element(By.XPATH, '/html/body/div/div/div[2]/div[7]/div/div[1]/div[1]/a[1]').get_attribute('href')
       print(naver_first_item_link)
     except Exception as e:
