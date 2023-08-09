@@ -91,6 +91,9 @@ class BlogSummaryView(APIView):
     options = webdriver.ChromeOptions()
     options.add_argument("headless")
     options.add_argument("user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36")
+    # linux 환경에서 필요한 option
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome(options=options)
     driver.get(link)
     try:
