@@ -20,8 +20,8 @@ class FirstItem(APIView):
     naver_link = "https://msearch.shopping.naver.com/search/all?frm=NVSHMDL&origQuery="+ encoded_item_name +"&pagingIndex=1&pagingSize=40&productSet=model&query="+ encoded_item_name +"&sort=rel&viewType=lst"
 
     options = webdriver.ChromeOptions()
-    options.add_argument("headless")
-    options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64; Ubuntu 20.04.3 LTS focal; Unity) AppleWebKit/537.36 (KHTML, like Gecko) Slack/4.19.2 Chrome/91.0.4472.164 Electron/13.2.1 Safari/537.36 Sonic Slack_SSB/4.19.2")
+    # options.add_argument("headless")
+    options.add_argument("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36")
     # linux 환경에서 필요한 option
     options.add_argument("no-sandbox")
     options.add_argument("disable-dev-shm-usage")
