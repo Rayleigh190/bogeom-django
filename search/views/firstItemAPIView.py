@@ -61,22 +61,22 @@ class FirstItem(APIView):
       return Response(final_result_dic, status=200)
 
 
-    driver.get(naver_link)
-    # WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "/html/body/div/div/div[2]/div[7]")))
-    try:
-      html = driver.page_source
-      soup = bs(html, "html.parser")
-      print(soup)
-      naver_first_item_link = driver.find_element(By.XPATH, '/html/body/div/div/div[2]/div[7]/div/div[1]/div[1]/a[1]').get_attribute('href')
-      print(naver_first_item_link)
-    except Exception as e:
-      print("네이버 첫 번째 아이템 파싱 에러.", e)
-      error_message = "네이버 첫 번째 아이템 파싱 에러 발생: " + str(e)
-      final_result_dic = {'success':False, 'error': error_message}
-      return Response(final_result_dic, status=200)
+    # driver.get(naver_link)
+    # # WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "/html/body/div/div/div[2]/div[7]")))
+    # try:
+    #   html = driver.page_source
+    #   soup = bs(html, "html.parser")
+    #   print(soup)
+    #   naver_first_item_link = driver.find_element(By.XPATH, '/html/body/div/div/div[2]/div[7]/div/div[1]/div[1]/a[1]').get_attribute('href')
+    #   print(naver_first_item_link)
+    # except Exception as e:
+    #   print("네이버 첫 번째 아이템 파싱 에러.", e)
+    #   error_message = "네이버 첫 번째 아이템 파싱 에러 발생: " + str(e)
+    #   final_result_dic = {'success':False, 'error': error_message}
+    #   return Response(final_result_dic, status=200)
     
 
-    final_result_dic = {'success':True, 'response': {'enuri':enuri_first_item_link, 'danawa':dnawa_first_item_link,'naver':naver_first_item_link}, 'error': None}
+    final_result_dic = {'success':True, 'response': {'enuri':enuri_first_item_link, 'danawa':dnawa_first_item_link,'naver':None}, 'error': None}
 
     driver.quit()
 
