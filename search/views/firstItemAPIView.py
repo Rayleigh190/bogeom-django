@@ -59,7 +59,7 @@ class FirstItem(APIView):
 
 
     driver.get(naver_link)
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "product_list_item__b84TO")))
+    # WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "product_list_item__b84TO")))
     try:
       print("네이버 시작")
       html = driver.page_source
