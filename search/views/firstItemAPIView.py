@@ -61,9 +61,11 @@ class FirstItem(APIView):
     driver.get(naver_link)
     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "product_list_item__b84TO")))
     try:
+      print("네이버 시작")
       html = driver.page_source
       soup = bs(html, "html.parser")
       elements = soup.find('div', 'product_list_item__b84TO').select('a')
+      print(elements)
       # elements = soup.select('div > a.product_info_main__piyRs.linkAnchor')
       naver_first_item_link = elements[0]['href']
       print(naver_first_item_link)
