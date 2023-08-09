@@ -20,7 +20,9 @@ class FirstItem(APIView):
     naver_link = "https://msearch.shopping.naver.com/search/all?frm=NVSHMDL&origQuery="+ encoded_item_name +"&pagingIndex=1&pagingSize=40&productSet=model&query="+ encoded_item_name +"&sort=rel&viewType=lst"
 
     options = webdriver.ChromeOptions()
-    # options.add_argument("headless")
+    options.add_argument("headless")
+    options.add_argument("--disable-gpu")
+    options.add_argument("lang=ko_KR")
     options.add_argument("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36")
     # linux 환경에서 필요한 option
     options.add_argument("no-sandbox")
