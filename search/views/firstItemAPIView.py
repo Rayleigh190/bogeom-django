@@ -62,23 +62,23 @@ class FirstItem(APIView):
       return Response(final_result_dic, status=200)
 
 
-    try:
-      header = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"} 
-      page = requests.get(naver_link, headers=header)
-      soup = bs(page.text, "html.parser")
-      print(soup)
-      elements = soup.find('div', class_='list_extend').select('a')
-      print(elements)
-      naver_first_item_link = elements[0]['href']
-      print(naver_first_item_link)
-    except Exception as e:
-      print("네이버 첫 번째 아이템 파싱 에러.", e)
-      error_message = "네이버 첫 번째 아이템 파싱 에러 발생: " + str(e)
-      final_result_dic = {'success':False, 'error': error_message}
-      return Response(final_result_dic, status=200)
+    # try:
+    #   header = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"} 
+    #   page = requests.get(naver_link, headers=header)
+    #   soup = bs(page.text, "html.parser")
+    #   print(soup)
+    #   elements = soup.find('div', class_='list_extend').select('a')
+    #   print(elements)
+    #   naver_first_item_link = elements[0]['href']
+    #   print(naver_first_item_link)
+    # except Exception as e:
+    #   print("네이버 첫 번째 아이템 파싱 에러.", e)
+    #   error_message = "네이버 첫 번째 아이템 파싱 에러 발생: " + str(e)
+    #   final_result_dic = {'success':False, 'error': error_message}
+    #   return Response(final_result_dic, status=200)
     
 
-    final_result_dic = {'success':True, 'response': {'enuri':enuri_first_item_link, 'danawa':dnawa_first_item_link,'naver':naver_first_item_link}, 'error': None}
+    final_result_dic = {'success':True, 'response': {'enuri':enuri_first_item_link, 'danawa':dnawa_first_item_link,'naver':None}, 'error': None}
 
     driver.quit()
 
