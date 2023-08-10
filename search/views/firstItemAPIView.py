@@ -7,7 +7,28 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import urllib.parse
-import requests
+import requests, os
+
+# 시크릿 정보 관리
+import json
+from django.core.exceptions import ImproperlyConfigured
+from pathlib import Path
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+secret_file = os.path.join(BASE_DIR, 'secrets.json') # secrets.json 파일 위치를 명시
+
+with open(secret_file) as f:
+  secrets = json.loads(f.read())
+
+def get_secret(setting, secrets=secrets):
+  try:
+    return secrets[setting]
+  except KeyError:
+    error_msg = "Set the {} environment variable".format(setting)
+    raise ImproperlyConfigured(error_msg)
+
+CLOUDETYPE_API = get_secret("CLOUDETYPE_API")
 
 
 class FirstItem(APIView):
@@ -62,23 +83,19 @@ class FirstItem(APIView):
       return Response(final_result_dic, status=200)
 
 
-    # try:
-    #   header = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"} 
-    #   page = requests.get(naver_link, headers=header)
-    #   soup = bs(page.text, "html.parser")
-    #   print(soup)
-    #   elements = soup.find('div', class_='list_extend').select('a')
-    #   print(elements)
-    #   naver_first_item_link = elements[0]['href']
-    #   print(naver_first_item_link)
-    # except Exception as e:
-    #   print("네이버 첫 번째 아이템 파싱 에러.", e)
-    #   error_message = "네이버 첫 번째 아이템 파싱 에러 발생: " + str(e)
-    #   final_result_dic = {'success':False, 'error': error_message}
-    #   return Response(final_result_dic, status=200)
+    try:
+      naver_link_get_api = CLOUDETYPE_API+item_name
+      response = requests.get(naver_link_get_api).json()
+      naver_first_item_link = response['response']['naver']
+      print(naver_first_item_link)
+    except Exception as e:
+      print("네이버 첫 번째 아이템 파싱 에러.", e)
+      error_message = "네이버 첫 번째 아이템 파싱 에러 발생: " + str(e)
+      final_result_dic = {'success':False, 'error': error_message}
+      return Response(final_result_dic, status=200)
     
 
-    final_result_dic = {'success':True, 'response': {'enuri':enuri_first_item_link, 'danawa':dnawa_first_item_link,'naver':None}, 'error': None}
+    final_result_dic = {'success':True, 'response': {'enuri':enuri_first_item_link, 'danawa':dnawa_first_item_link,'naver':naver_first_item_link}, 'error': None}
 
     driver.quit()
 
